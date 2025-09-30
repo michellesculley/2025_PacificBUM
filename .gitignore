@@ -1,0 +1,20 @@
+##ignore all ss.exe files
+#*.exe
+
+## ignore all .Rdata files
+*.Rdata
+
+## ignore all temp files
+~*
+*.tmp
+## only keep input and output agepro files
+
+
+## ignore the ignore folder
+/ignore files
+
+##ignore all confidential files
+.Rproj.user
+/HI CPUE
+BUM_logbk_91_25.csv
+logbook_092325.csv
