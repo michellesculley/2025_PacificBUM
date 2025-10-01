@@ -1,11 +1,10 @@
 
 setwd("C:/Users/michelle.sculley/Documents/2021 BUM ASSESS")
-df<-read.csv("BUMCPUE_Env.csv", header=TRUE)
+df<-read.csv("HI CPUE/BUM_CPUEnoSST.csv", header=TRUE)
 
 library(ggplot2)
 library(mgcv)
 library(maps)
-library(maptools)
 library(reshape2)
 library(plyr)
 library(gridExtra)
@@ -20,7 +19,11 @@ library(arm)
 
 
 
-BUMCPUE<-data.frame("Year"=df[,"HAUL_YEAR"],"Month"=df[,"HAUL_MONTH"],"Day"=df[,"HAUL_DAY"],"Bait"=df[,"BAIT_CODE"], "BeginSetTime"=df[,"BEGIN_SET_TIME"],"HPF"=df[,"HOOKS_PER_FLOAT"],"Lat"=df[,"LAT"],"Set"=df[,"SET_TYPE.x"],"CPUE"=df[,"BUM_CPUE"],"Vessel"=df[,"PERMIT_NUMBER.x"],"Lon"=df[,"LON"]*-1, "SST"=df[,"SSTDEGC"],"PDO"=df[,"PDO_INDEX"],"SOI"=df[,"SOI"],"Target"=df[,"TARGET_SPECIES_CODE"], "Hooks"=df[,"NUMBER_OF_HOOKS_SET.x"], Catch=df[,"NUMBER_OF_FISH_KEPT"])
+BUMCPUE<-data.frame("Year"=df[,"HAUL_YEAR"],"Month"=df[,"HAUL_MONTH"],"Day"=df[,"HAUL_DAY"],
+                    "Bait"=df[,"BAIT_CODE"], "BeginSetTime"=df[,"BEGIN_SET_TIME"],"HPF"=df[,"HOOKS_PER_FLOAT"],
+                    "Lat"=df[,"LATITUDE"],"Set"=df[,"SET_TYPE"],"CPUE"=df[,"BUM_CPUE"],"Vessel"=df[,"PERMIT_NUMBER"],
+                    "Lon"=df[,"LONGITUDE"]*-1, "PDO"=df[,"PDO_INDEX"],"SOI"=df[,"Value"],
+                    "Target"=df[,"TARGET_SPECIES_CODE"], "Hooks"=df[,"NUMBER_OF_HOOKS_SET"], Catch=df[,"BLUE_MARLIN_NUMBER_OF_FISH_KEPT"])  #"SST"=df[,"SSTDEGC"],
 BUMCPUE<-subset(BUMCPUE,!is.na(HPF)&!is.na(Bait))
 BUMCPUE$Lat1<-ceiling(BUMCPUE$Lat)
 BUMCPUE$Lon1<-ceiling(BUMCPUE$Lon)
@@ -48,7 +51,7 @@ BUMCPUE$Target<-ifelse(BUMCPUE$Target=="B","B", ifelse(BUMCPUE$Target=="T","T","
 BUMCPUE$Target<-as.factor(BUMCPUE$Target)
 
 
-BUMCPUE<-BUMCPUE[complete.cases(BUMCPUE[,c("Year","Quarter","HPF","Bait","Begin","SST","Lat","Lon","PDO","SOI","Vessel")]),]
+BUMCPUE<-BUMCPUE[complete.cases(BUMCPUE[,c("Year","Quarter","HPF","Bait","Begin","SST","Lat","Lon","PDO","SOI","Vessel","Month","BeginSetTime","")]),]
 
 
 BUMCPUE$PropPos<-ifelse(BUMCPUE$CPUE>0,1,0)
