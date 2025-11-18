@@ -85,3 +85,106 @@ Model4.1 <- lmer(CPUE ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + a
 AIC(Model4.1)
 BIC(Model4.1)
 deviance(Model4.1)
+
+
+## propostion positives model:
+
+Model0 <- glm(PropPos ~ 1, data = BUMCPUE, family = binomial(link = "logit"))
+
+Model1.1 <- glm(PropPos ~as.factor(Year), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.2 <- glm(PropPos ~ as.factor(Month), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.3 <- glm(PropPos ~ as.factor(Quarter), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.4 <- glm(PropPos ~ as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.5 <- glm(PropPos ~ as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.6 <- glm(PropPos ~ BeginSetTime, data = BUMCPUE, family = binomial(link = "logit"))
+Model1.7 <- glm(PropPos ~ as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+Model1.8 <- glm(PropPos ~ Lat, data = BUMCPUE, family = binomial(link = "logit"))
+Model1.9 <- glm(PropPos ~ Lon, data = BUMCPUE, family = binomial(link = "logit"))
+Model1.10 <- glm(PropPos ~ as.factor(SetType), data = BUMCPUE, family = binomial(link = "logit"))
+
+
+anova(Model0, Model1.1, Model1.2, Model1.3, Model1.4, Model1.5, Model1.6, Model1.7, Model1.8, Model1.9, Model1.10)
+AIC(Model0, Model1.1, Model1.2, Model1.3, Model1.4, Model1.5, Model1.6, Model1.7, Model1.8, Model1.9, Model1.10)
+BIC(Model0, Model1.1, Model1.2, Model1.3, Model1.4, Model1.5, Model1.6, Model1.7, Model1.8, Model1.9, Model1.10)
+
+deviance(Model0)
+deviance(Model1.1)
+deviance(Model1.2)
+deviance(Model1.3)
+deviance(Model1.4)
+deviance(Model1.5)
+deviance(Model1.6)
+deviance(Model1.7)
+deviance(Model1.8)
+deviance(Model1.9)
+deviance(Model1.10)
+
+Model2.1 <- glm(PropPos ~ Lat + as.factor(Year), data = BUMCPUE, family = binomial(link = "logit"))
+Model2.2 <- glm(PropPos ~ Lat + as.factor(Month), data = BUMCPUE, family = binomial(link = "logit"))
+Model2.3 <- glm(PropPos ~ Lat + as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+Model2.4 <- glm(PropPos ~ Lat + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model2.5 <- glm(PropPos ~ Lat + as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+Model2.6 <- glm(PropPos ~ Lat + Lon, data = BUMCPUE, family = binomial(link = "logit"))
+
+
+AIC(Model2.1, Model2.2, Model2.3, Model2.4, Model2.5, Model2.6)
+BIC(Model2.1, Model2.2, Model2.3, Model2.4, Model2.5, Model2.6)
+deviance(Model2.1)
+deviance(Model2.2)
+deviance(Model2.3)
+deviance(Model2.4)
+deviance(Model2.5)
+deviance(Model2.6)
+
+Model3.1 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month), data = BUMCPUE, family = binomial(link = "logit"))
+Model3.2 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+Model3.3 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model3.4 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+Model3.5 <- glm(PropPos ~ Lat + as.factor(Year) + Lon, data = BUMCPUE, family = binomial(link = "logit"))
+
+
+AIC(Model3.1, Model3.2, Model3.3, Model3.4, Model3.5)
+BIC(Model3.1, Model3.2, Model3.3, Model3.4, Model3.5)
+deviance(Model3.1)
+deviance(Model3.2)
+deviance(Model3.3)
+deviance(Model3.4)
+deviance(Model3.5)
+
+Model4.1 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+Model4.2 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model4.3 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+Model4.4 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon, data = BUMCPUE, family = binomial(link = "logit"))
+
+
+AIC(Model4.1, Model4.2, Model4.3, Model4.4)
+BIC(Model4.1, Model4.2, Model4.3, Model4.4)
+deviance(Model4.1)
+deviance(Model4.2)
+deviance(Model4.3)
+deviance(Model4.4)
+
+Model5.1 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+Model5.2 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model5.3 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+
+
+AIC(Model5.1, Model5.2, Model5.3)
+BIC(Model5.1, Model5.2, Model5.3)
+deviance(Model5.1)
+deviance(Model5.2)
+deviance(Model5.3)
+
+
+Model6.1 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+Model6.2 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+
+AIC(Model6.1, Model6.2)
+BIC(Model6.1, Model6.2)
+deviance(Model6.1)
+deviance(Model6.2)
+
+Model7.1 <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+AIC(Model7.1)
+BIC(Model7.1)
+deviance(Model7.1)

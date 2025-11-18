@@ -265,7 +265,7 @@ write.csv(df_sst_pdoi_soi_oni,file='HI CPUE/BUM_CPUEwSST.csv',row.names  = F)
 ```
 
 Add Lunar Illumination to data file. From US Naval Observatory
-As of October 12, 2021 - not able to update these files, portal seems to be broken?
+
 ```{r, fig.height = 5, fig.width = 7}
 #df_sst_pdoi_soi_oni<-read.csv(file='C:/Users/michelle.sculley/Documents/2022 MLS ASSESS/HI Data/Catch/MLS_CPUEwEnv.csv')
 Lunar = read.csv('C:/Users/michelle.sculley/Documents/Swordfish/DataPrep/LunarIllumination1990-2016.csv')
@@ -295,6 +295,7 @@ head(df_sst_pdoi_soi_Lunar)
 write.csv(df_sst_pdoi_soi_Lunar,file='C:/Users/michelle.sculley/Documents/Swordfish/DataPrep/SWO_CPUEwEnv.csv',row.names  = F)
 ```
 
+Need to find a new source for MLD. I can't remember which model I pulled from last time, but the new downscaled data from CEFI for our region might be a good source once its available.
 ```{r, fig.height = 5, fig.width = 7}
 MLD = read.csv('G:/Swordfish/MLDFiles/MLD_Pacific.csv')
 df_sst_pdoi_soi_Lunar<-read.csv('C:/Users/michelle.sculley/Documents/Swordfish/DataPrep/SWO_CPUEwEnv.csv')
