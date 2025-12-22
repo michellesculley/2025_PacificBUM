@@ -19,8 +19,8 @@ library(tidyr)
 library(tidyverse)
 library(ggplot2)
 library(ggmap)
-# library(rnaturalearth)
-# library(scales)
+ library(rnaturalearth)
+ library(scales)
 library(lubridate)
 library(gridExtra) # For table inset
 library(grid)
@@ -39,7 +39,7 @@ db_host     <- "picdb.nmfs.local"      # Hostname or IP address
 db_port     <- "1521"                        # Default Oracle port
 db_service  <- "pic.pifscproddbsn.pifscprodvcn.oraclevcn.com"     # The database service name
 db_user     <- "msculley"
-db_pass     <- "XXXXX"
+db_pass <- "xxxxxxx"
 
 # --- Build the Connection String ---
 # The .connection_string argument is where you provide all the details.
@@ -64,19 +64,23 @@ con <- dbConnect(
 # # # # Pull summarized logbook data and clean-up
 # # # #| echo: false
 # 
-# # # ## to avoid needing to be connected to the VPN/memory issues, I recommend pulling this once each year, saving it as an .Rdata file, and then loading it in future renderings
- HI_stats <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_REPORT_STATS_HC_RFMO", " WHERE  CONF !='0'", sep = ""))
- Log_effort <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_HDR_HAC", " WHERE FLEET = 'HI'AND CONF_5x5 != '0'", sep = ""))
-# HI_MAP_DATA <- dbGetQuery(ora_con, paste("SELECT * FROM LLDS.LLDS_5x5xYRxSD_HC_NC", " WHERE  CONF !='0'", sep = ""))
-# HI_all_gears <- dbGetQuery(ora_con, paste("SELECT * FROM LLDS.HM_HICA_SPECIES", sep = ""))
-# HI_Small_boat_effort <- dbGetQuery(ora_con, paste("SELECT * FROM WP_HAWAII.H_NON_LL_EFFORT_V", sep = ""))
-# HI_Small_boat_cpue_info <-dbGetQuery(ora_con, paste("SELECT * FROM WP_HAWAII.H_NON_LL_CATCH_DETAILED_V", sep = "")) # nolint # nolint
-# AS_Log_effort <- dbGetQuery(ora_con, paste("SELECT * FROM LLDS.LLDS_HDR_HAC"," WHERE FLEET = 'AS'AND CONF_5x5 != '0'", sep = ""))
-# AS_stats <- dbGetQuery(ora_con, paste("SELECT * FROM LLDS.LLDS_REPORT_STATS_AS_RFMO"," WHERE CONF !='0'", sep = ""))
+# # # # ## to avoid needing to be connected to the VPN/memory issues, I recommend pulling this once each year, saving it as an .Rdata file, and then loading it in future renderings
+#  HI_stats <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_REPORT_STATS_HC_RFMO", " WHERE  CONF !='0'", sep = ""))
+#  Log_effort <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_HDR_HAC", " WHERE FLEET = 'HI'AND CONF_5x5 != '0'", sep = ""))
+#  HI_MAP_DATA <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_DETAIL_HAC", " WHERE  CONF_5x5 !='0' ", sep = ""))
+# HI_all_gears <- dbGetQuery(con, paste("SELECT * FROM LLDS.HM_HICA_SPECIES", sep = ""))
+#  HI_Small_boat_effort <- dbGetQuery(con, paste("SELECT * FROM WP_HAWAII.H_NON_LL_EFFORT_V", sep = ""))
+#  HI_Small_boat_cpue_info <-dbGetQuery(con, paste("SELECT * FROM WP_HAWAII.H_NON_LL_CATCH_DETAILED_V", sep = "")) # nolint # nolint
+#  AS_Log_effort <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_HDR_HAC"," WHERE FLEET = 'AS'AND CONF_5x5 != '0'", sep = ""))
+#  AS_stats <- dbGetQuery(con, paste("SELECT * FROM LLDS.LLDS_REPORT_STATS_AS_RFMO"," WHERE CONF !='0'", sep = ""))
 # 
 # ## Save the data to and .Rdata file so you can access it without connecting to the oracle database
 # # Make sure to put the saved data file on the gitignore file so don't load any confidential data to github.
 # save(HI_stats, Log_effort, HI_MAP_DATA, HI_all_gears, HI_Small_boat_effort, HI_Small_boat_cpue_info, AS_Log_effort, AS_stats, file="HI_SAFE_Data.Rdata")
 
 ## load the previously saved .Rdata file
- #load("HI_SAFE_Data.Rdata") #Don't load .Rdata on to github.
+load("C:/Users/Michelle.Sculley/Documents/WCPFMC_Annual_Report/HI_SAFE_Data.Rdata") #Don't load .Rdata on to github.
+
+
+## attempt to connect to OBS database
+

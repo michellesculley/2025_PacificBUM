@@ -1,0 +1,509 @@
+---
+title: "Standardization of Pacific Blue Marlin Catch Per Unit Effort in the Hawaii Longline Fishery from 1995-2024"
+author: 
+      email: "michelle.sculley@noaa.gov"
+      affiliation: 
+        - id: nmfs
+          name: National Marine Fisheries Service
+affiliations: 
+    - id: nmfs
+      name: |
+        *National Marine Fisheries Service
+        1854 Wasp Blvd, Bldg. 176
+        Honolulu, HI 96818
+        |
+format: 
+    pdf:
+      include-in-header:
+        text: |
+          \usepackage{fancyhdr}
+          \pagestyle{fancy}
+          \fancyhead[R]{ISC/26/BILLWG-01/XX}
+          \fancyfoot[C]{\thepage}
+editor: source
+execute: 
+    echo: false
+    warning: false
+params: 
+    year: "2024"
+    species: "Pacific blue marlin"
+    speces_abb: "BUM"
+---
+\thispagestyle{fancy}
+
+\begin{center}
+Michelle Sculley
+
+National Marine Fisheries Service
+1845 Wasp Blvd., Bldg. 176
+Honolulu, HI 96818
+
+Email: michelle.sculley@noaa.gov
+\end{center}
+
+![](C:\Users\Michelle.Sculley\Documents\2025_PacificBUM\BlueMarlin.png)
+
+\newpage
+
+``` {r}
+#| echo: FALSE
+source("BUM_dataexploration.r")
+#print("Yes")
+```
+
+## Abstract
+
+This working paper provides the standardization of the Hawaii-based longline fishery blue marlin (*Makaira mazara*) catch per unit effort (CPUE) data. A lognormal generalized linear mixed model (GLMM) was fit to the combined data with 13 operational and environmental covariates considered. Results showed that the environmental covariates did not contribute substantially to the deviance of the models. Overall, the standardized CPUE index is relatively flat with a slight dip in the late 2000s to early 2010s.
+
+## Introduction
+
+Indo-`{r} params$species` (*Makaira mazara*) is a tropical and subtropical species of billfish found in the Pacific Ocean. It is often caught as a non-target species in longline fisheries targeting tuna and swordfish, although it is targeted in some commercial and recreational fisheries. The most recent stock assessment of Indo-Pacific blue marlin was in 2021, which was not overfished (SSB \> SSB~MSY~) and overfishing was not occurring (F \< F~MSY~, ISC BILLWG, 2021). The billfish working group (BILLWG) of the International Scientific Committee for Tuna and Tuna-like Species in the North Pacific Ocean (ISC) has agreed to do a benchmark assessment of the `{r} params$species` in 2026. This assessment considers blue marlin to be a pan-Pacific stock.
+
+The Hawaii-based longline fishery catches blue marlin as non-target species in both the swordfish-targeting shallow-set sector and the tuna-targeting deep-set sector. This fishery spans from approximately 180° to 120°W (@fig-CPUEMap). The majority of the catch is derived from the deep-set sector. This working paper details the methods and results of the standardization of blue marlin from the Hawaii-based fishery.
+
+## Methods
+
+Detailed set-by-set data on the Hawaii-based longline fishery are available in the longline logbook data, which has 100% coverage of the fishery. These details include catch in numbers of fish and a variety of operational variables, among them: location as latitude and longitude, vessel ID, hooks per float, total number of hooks set, type of bait used, and time longlines were set.
+
+Data were extracted from the Pacific Islands longline logbook database on 23 September 2025 for this analysis. There were `{r} scales::comma(nrow(BUMCPUE))` total records after filtering erroneous data, and `{r} scales::percent(mean(BUMCPUE$PropPos), accuracy=1)` of these were positive catches. There were `{r} scales::comma(sum(BUMCPUE$Catch[which(BUMCPUE$SetType=="D")]))` fish recorded in the logbook data from the deep-set sector, which accounts for `{r} scales::percent((sum(BUMCPUE$Catch[which(BUMCPUE$SetType=="D")])/sum(BUMCPUE$Catch)), accuracy = 1)` of the catch; `{r} scales::comma(sum(BUMCPUE$Catch[which(BUMCPUE$SetType=="S")]))` fish were recorded in the shallow-set sector or `{r} scales::percent((sum(BUMCPUE$Catch[which(BUMCPUE$SetType=="S")])/sum(BUMCPUE$Catch)),accuracy = 1)` of the catch.
+
+Observers were first placed onboard Hawaii-based longline vessels in 1994. Observer coverage varied significantly prior to 2000, with observer coverage between 3.3 and 10.4% annually for the entire fishery (NMFS, 2017). Due to interactions with protected species the shallow-set sector was closed from 2001–2004. When it was reopened, 100% observer coverage was implemented on shallow-set trips and \~20% observer coverage was implemented on deep-set trips, although observer coverage on deep-set trips in recent years has dropped below 10% (Gilman et al., 2007). The deep-set trips are typically further south than the shallow-set trips, which are concentrated around the sub-tropical frontal zone (STFZ) where large swordfish are caught (Sculley et al., 2017). After the closure, shallow sets were defined as sets with fewer than 15 hooks per float, however, prior to the closure most sets targeting tuna used 10 or more hooks per set. Dividing the catch into deep-set and shallow-set sectors was based upon the work presented in Sculley (2019) and used in the previous CPUE analyses. Deep-set sector catches were defined as 10 or more hooks per float prior to 2004, and 15 or more hooks per float from 2004 through the present.
+
+Due to time constraints, the full dataset were standardized using a delta-lognormal generalized linear mixed model. Positive encounters were modeled on a lognormal scale with vessel as a random effect. The encounter proability was modeled with a binomal distribution and a logit link function. Annual mean CPUE was calculated from the final models using the estimated marginal means package in R (emmeans, Lenth et al., 2017; R version 3.4.0, R Core Team, 2017) which accounts for the unbalanced nature of the data and missing values, not allowing for large numbers of observations in a level of a factor to have an undue influence on the average of the values. Annual mean CPUE and standard deviations were then back-transformed into normal space and bias corrected. Annual year effects were then multiplied together from the binomial and lognormal models to achieve the standardized CPUE value. Standard error was calculated using the Goodman standard error formula \[Reference Needed\].
+
+Environmental variables used in the standardization were obtained from publically available data sets. Sea Surface temperatures (SST) from January 1994 to 2024 were based on monthly 0.5° resolution composites from the NOAA GOES-E/W satellite downloaded from Pacific Islands Fisheries Science Center (PIFSC) OceanWatch (2025). The Southern Oscillation Index (SOI), the Pacific Decadal Oscillation Index (PDO), and the Oceanic Nino Index (ONI) were monthly region wide indices (NOAA NCDC, 2025).
+
+There were 13 potential explanatory variables explored for each model. Year, Quarter, Month, hooks per float (HPF), bait type, begin, and set type were included as factors. Latitude, longitude, PDO, SOI, ONI, SST, and the begin set time were included as continuous variables. Vessel, based upon the permit number, was included as a random effect to account for differences in fishers behaviors.
+
+Begin is a factor with four levels describing the quarter of day in which the set was initially deployed with 1 = midnight – 0600, 2 = 0600-1200, 3 = 1200-1800, and 4 = 1800-2400. Set type was a factor with two levels indicating if the set was shallow or deep. Bait type is a code that indicates the type of bait used when setting the hooks; these are typically some kind of baitfish such as mackerel, squid, or a combination of baits. Begin set time was the time (in hours) the set was initially deployed. In the first round of model selection, models with set type and hooks per float, begin and begin set time, and month and quarter were compared and the models with the lowest AIC were included in future model selection steps. For both models, begin, month, and hooks per float had lower AICs than begin set time, quarter, and set type and were used in subsequent model selection steps.
+
+Explanatory variables were added using forward stepwise selection with variables being selected based upon the lowest AIC, most deviance explained, and if they were statistically significant based upon a Chi-squared likelihood ratio test. Additional variables were not included if they were not significant based upon the likelihood test (Bigelow et al., 1999) or increased the model deviance explained by less than 0.1% compared to the simpler model. Ultimately, no environmental variables were included in the final models. Final models for the encounter probability and positive catches are: 
+
+$$ Probability of Encounter \sim Latitude + Year + Month + Longitude + Bait + HPF + Begin$$
+
+$$log(CPUE) \sim Bait + Begin + Year + HPF + (1|Vessel) $$
+
+## Results and Discussion
+
+The models for encounter probability and positive catches explained 9.7% and 10.2% of the total variance, respecitvely. The biggest The correlations between nominal CPUE and the environmental and spatial variables were generally very low (@tbl-correlations). Neither did they show any obvious trends with nominal CPUE (Figures [-@fig-envirocor1] - [-@fig-opercor6]).
+
+The standardized CPUE trend was very similar to the nominal CPUE trend, with the standardized values less variable than the nominal values, with the exception of the first few years of the time series where the standardized CPUE was lower than the nominal CPUE (@fig-cpue, @tbl-CPUE). Diagnostics for the GLMM show substantial deviations from the assumption of normality for both model components (Figures [-@fig-Diags1] - [-@fig-Diags2]). Partial dependecy plots are show for each explanatory variable to illustrate the effect each variable has on the probability of encounter and CPUE (Figures [-@fig-PropPartial1] - [-@fig-PosPartial]). Pearson residuals for the both the positive catch lognormal model and encounter proability binomial model appeared to be slightly negatively biased but with a long positive tail and deviated substantially from the normal Q-Q line. When the residuals are compared to each explanatory variable, there appears to be a a negative bias across all variables, with large positive outliers (Figures [-@fig-PropResid1] - [-@fig-PosResid]).
+
+
+## Conclusions
+
+While there is likely some bias in the estimates of CPUE as the negative bias in the residuals indicate, these data are the best available science and are likely consistent with the trends in abundance of the blue marlin available to the Hawaii-based longline fishery. It is interesting to note that the environmental variables considered in this standardization do not appear to be highly correlated to blue marlin CPUE and additional research should be done to identify any environmental covariates that may be important to blue marlin catch rates.
+
+## Literature Cited
+
+Bigelow, K. A., C. H. Boggs and He, X. I. 1999. Environmental effects on swordfish and blue shark catch rates in the US North Pacific longline fishery. Fisheries Oceanography 8(3): 178-198. 
+
+Gilman, E., D. Kobayashi, T. Swenarton, N. Brothers, P. Dalzell and Kinan-Kelly, I. 2007. Reducing sea turtle interactions in the Hawaii-based longline swordfish fishery. Biological Conservation 139(1–2): 19-28. 
+
+ISC BILLWG. 2016. Report of the billfish working group workshop (Annex 7). International Scientific Committee for Tuna and Tuna-like Species in the North Pacific Ocean 22-30 March 2016. Busan, Korea. 
+
+Lenth, R., Love, J. and Herve, M. 2017. Estimated Marginal Means, aka Least-Squares Means. R Package. Version 1.0 https://github.com/rvlenth/emmeans 
+
+NMFS. 2025. Hawaii longline fishery logbook statistics -non-confidential summary tables. Available online at http://www.pifsc.noaa.gov/fmb/reports.php, accessed 25 September 2025. National Marine Fisheries Service, Pacific Islands Fisheries Science Center, Honolulu. 
+
+NOAA NCDC 2025. Spatially and temporally large-scale anomalies that influence the variability of the atmospheric circulation. Online Database https://www.ncdc.noaa.gov/teleconnections/ Accessed 25 September 2025. 
+
+Pacific Islands Fisheries Science Center (PIFSC) OceanWatch. (2025) Central Pacific Node. http://pifsc-oceanwatch.irc.noaa.gov/ Accessed: 25 September 2025. 
+
+Pacific Islands Region Office (PIRO). 2017. Hawaii Longline Observer Program Observer Field Manual. Version LM.17.02. National Oceanic and Atmospheric Administration, Pacific Islands Region, Honolulu, Hawai‛i. 
+
+R Core Team 2025. R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/. 
+
+Sculley, M., Brodziak, J., Yau, A. and Kapur, M. 2017. An Exploratory Analysis of Trends in Swordfish (*Xiphias gladius*) Length Composition Data from the Hawaiian Longline Fishery. ISC/17/BILLWG-01/03. 
+
+Sculley, Michelle. 2019. Standardization of the Striped Marlin (*Kajikia audax*) Catch per Unit Effort Data Caught by the Hawaii-based Longline Fishery from 1994-2017 Using Generalized Linear Models. ISC/19/BILLWG-01/06.
+
+\newpage
+
+## Tables
+
+```{r}
+#| label: tbl-correlations
+#| echo: false
+#| tbl-cap: Correlations and p-values between blue marlin CPUE and candidate environmental and spatial variables
+#| fig-pos: 'H'
+
+
+#cor(BUMCPUE2[, c("CPUE", "Year", "Month", "Lat", "Lon", "SST", "PDO", "Bait", "BeginSetTime", "HPF", "SOI", "ONI")])
+
+CorList<-list(
+"Lat" = cor.test(BUMCPUE2$CPUE, BUMCPUE2$Lat), # significant
+
+#LatCor$p.value
+#LatCor$estimate
+
+"Lon"=cor.test(BUMCPUE2$CPUE, BUMCPUE2$Lon), # significant
+"SST"=cor.test(BUMCPUE2$CPUE, BUMCPUE2$SST), # signficant
+"PDO"=cor.test(BUMCPUE2$CPUE, BUMCPUE2$PDO), # significant
+"SOI"=cor.test(BUMCPUE2$CPUE, BUMCPUE2$SOI)
+)
+
+CorData <- CorList %>%
+  
+  # map_dfr iterates over the list and combines the results into a data frame (dfr)
+  map_dfr(~ tibble(
+      p_value = .x$p.value,      # Extract the p.value
+      estimate = .x$estimate     # Extract the estimate
+    ), 
+    .id = "Variable_Label" )      # Use the list names (Var1, Var2, etc.) as an ID column
+CorData$p_value<-ifelse(CorData$p_value<2e-16,2.2e-16, CorData$p_value)
+CorData<-CorData %>%
+pivot_longer(
+    cols = c(p_value, estimate),
+    names_to = "Parameter",
+    values_to = "Value"
+  ) %>%
+    # Rename the Measure column to be the primary row label
+  mutate(
+    Parameter = case_when(
+     Parameter == "estimate" ~ "CPUE",
+     Parameter == "p_value"  ~ "p value",
+      TRUE ~ Parameter # Keep anything else the same
+    )
+  ) %>%
+mutate(
+    Parameter = factor(Parameter, levels = c("CPUE", "p value"))
+  ) %>%
+  pivot_wider(
+    names_from = Variable_Label,
+    values_from = Value
+  ) %>%
+  # Ensure the data frame is sorted by the factor level (Measure)
+  arrange(Parameter)
+
+var_cols<-names(CorData)[-1]
+
+## make the table
+CorData %>% gt(
+    rowname_col = "Parameter" # Designate 'Measure' as the row label column
+  ) %>%
+  
+  # 1. Bold the Column Labels (Var1, Var2, etc.)
+  cols_label_with(
+    fn = ~ md(paste0("**", .x, "**"))
+  ) %>%
+  
+  # 2. Bold the Row Labels ("CPUE" and "p value")
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_stub(rows = everything())
+  ) %>%
+  
+  # 3. Format numbers to be readable
+  fmt_number(
+    columns = all_of(var_cols),
+    rows = Parameter == "CPUE",
+    decimals = 2,
+    use_seps = FALSE
+  ) %>%
+  fmt_scientific(
+    columns = all_of(var_cols),
+    rows = Parameter == "p value", # Target only the 'p value' row
+    decimals = 2
+  ) %>%
+  
+  # 4. Label the Row Name column (Stub Head) and bold it
+  tab_stubhead(label = md("**Parameter**")) %>%
+  tab_options(
+    table.width=pct(100),
+    data_row.padding = px(2)
+  ) 
+
+```
+
+```{r}
+#| label: tbl-CPUE
+#| echo: false
+#| tbl-cap: Nominal and standardized CPUE values and CVs for the Hawaii-based longline fishery.
+
+TableData<-data.frame("Year" = RawCPUE$Year, "Nominal" = RawCPUE$MeanCPUE, "Standardized" = StandCPUE$CPUE, "SE"=StandCPUE$SE)
+TableData<-subset(TableData, Year<2025)
+
+TableData %>% gt(rowname_col="Year") %>%
+fmt_number(
+  columns = c(Nominal, Standardized, SE),
+  decimals = 2
+) %>%
+tab_stubhead(label = md("**Year**")) %>%
+  cols_label_with(
+    fn = ~ md(paste0("**", .x, "**"))
+  ) %>%
+tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_stub(rows = everything())
+  )
+
+```
+
+\newpage
+
+## Figures
+
+```{r}
+#| label: fig-CPUEMap
+#| echo: false
+#| fig-cap: Map of nominal CPUE for Pacific Blue Marlin caught by the US Hawaii-based longline fishery.
+
+#source the basemap:
+source("Plotting Pacific Map.R")
+
+#set up the map data
+BUMCPUE_Map<-aggregate(BUMCPUE$CPUE, by=list(BUMCPUE$Lat5, BUMCPUE$Lon5), mean)
+names(BUMCPUE_Map)<-c("Lat","Lon","CPUE")
+BUMCPUE_Map<-subset(BUMCPUE_Map, CPUE>0)
+
+grid_sf <- st_as_sf(
+    BUMCPUE_Map,
+    coords = c("Lon", "Lat"), # Specify which columns contain longitude and latitude
+    crs = 4326 # Set the initial Coordinate Reference System (WGS84)
+)
+
+# Transform the 'sf' object to the target CRS (the one used for the map)
+grid_sf_transformed <- grid_sf %>%
+    st_transform(crs = target_crs)
+
+Pacific_BaseMap +
+geom_sf(
+             data = grid_sf_transformed,
+             aes(color = CPUE, size=CPUE),
+             alpha = 0.7,
+         )  +
+scale_color_viridis(discrete=FALSE) +
+guides(size="none")
+
+```
+
+```{r}
+#| label: fig-envirocor1
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs SST from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+SSTPlot
+```
+```{r}
+#| label: fig-envirocor2
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs SOI from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+SOIPlot
+```
+```{r}
+#| label: fig-envirocor3
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs PDO from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+PDOPlot
+```
+```{r}
+#| label: fig-envirocor4
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs ONI from the Hawaii-based longline fishery.  Blue line indicates a GAM smoother fit to the data.
+
+ONIPlot
+```
+
+```{r}
+#| label: fig-opercor1
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Latitude from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+LatPlot
+```
+```{r}
+#| label: fig-opercor2
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Longitude from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+
+LonPlot
+```
+```{r}
+#| label: fig-opercor3
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Begin Set Time in Hours from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+BeginSetTimePlot
+```
+```{r}
+#| label: fig-opercor4
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Begin Set Time as a quarter of the day from the Hawaii-based longline fishery. Blue line indicates a GAM smoother fit to the data.
+
+BeginPlot
+
+```
+```{r}
+#| label: fig-opercor5
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Hooks Per Float from the Hawaii-based longline fishery. 
+
+HPFPlot
+
+```
+```{r}
+#| label: fig-opercor6
+#| echo: false
+#| fig-cap: Plots of blue marlin CPUE vs Bait type from the Hawaii-based longline fishery.
+
+
+BaitPlot
+```
+
+```{r}
+#| label: fig-CPUE
+#| echo: false
+#| fig-cap: Nominal (blue) vs standardized (black, 95% CI in grey shading) for Pacific blue marlin CPUE caught in the Hawaii-based longline fishery.
+
+CPUEPlot
+
+
+```
+
+```{r}
+#| label: fig-Diags1
+#| echo: false
+#| fig-cap: Diagnostic plots for the delta-lognormal GLMM. The histogram of standardized Pearson residuals (top) and normal Q-Q plot (bottom) for the encounter probability binomial model.
+#| fig-subcap: 
+#|  - ""
+#|  - ""
+#| layout-nrow: 2
+
+
+hist(residuals(BUM_PropPos, type = "pearson"), main="", xlab = "Pearson residuals")
+qqnorm(residuals(BUM_PropPos), main="")
+qqline(residuals(BUM_PropPos))
+```
+
+```{r}
+#| label: fig-Diags2
+#| echo: false
+#| fig-cap: Diagnostic plots for the delta-lognormal GLMM. The histogram of standardized Pearson residuals (top) and normal Q-Q plot (bottom) for the positive catches lognormal model.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#| layout-nrow: 2
+
+hist(residuals(BUM_Pos, type = "pearson"), main = "", xlab = "Pearson residuals")
+qqnorm(residuals(BUM_Pos), main = "")
+qqline(residuals(BUM_Pos))
+```
+
+```{r}
+#| label: fig-PropPartial1
+#| echo: false
+#| fig-cap: Partial dependency plots for explanatory variables in the binomial model for encounter rates. Top left is year, top right is month, bottom left is longitude, and bottom right is latitude.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+
+    pdp_prop_year
+    pdp_prop_mon
+    pdp_prop_lon
+    pdp_prop_lat
+
+```
+
+```{r}
+#| label: fig-PropPartial2
+#| echo: false
+#| fig-cap: Partial dependency plots for explanatory variables in the binomial model for encounter rates. Top left is hooks per float, top right is begin set time, and bottom left is bait type.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+    pdp_prop_hpf
+    pdp_prop_begin
+    pdp_prop_bait
+
+
+```
+
+```{r}
+#| label: fig-PosPartial
+#| echo: false
+#| fig-cap: Partial dependency plots for explanatory variables in the lognormal model for positive encounters. Top left is year, top right is bait type, bottom left is begin set time, and bottom right is hooks per float.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+    pdp_pos_year
+    pdp_pos_bait
+    pdp_pos_begin
+    pdp_pos_hpf
+
+```
+
+```{r}
+#| label: fig-PropResid1
+#| echo: false
+#| fig-cap: Residual plots for explanatory variables vs encounter rate in the binomial model. Top is year, bottom is month.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+    PPResid_Year,
+    PPResid_Month
+```
+
+```{r}
+#| label: fig-PropResid2
+#| echo: false
+#| fig-cap: Residual plots for explanatory variables vs encounter rate in the binomial model. Top is longitude, and bottom  is latitude.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+
+PPResid_Lat
+PPResid_Lon
+
+```
+```{r}
+#| label: fig-PropResid3
+#| echo: false
+#| fig-cap: Residual plots for explanatory variables vs encounter rate in the binomial model. Top  is hooks per float, middle is begin set time, and bottom is bait type.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+    PPResid_HPF
+    PPResid_Begin
+    PPResid_Bait
+
+```
+
+```{r}
+#| label: fig-PosResid
+#| echo: false
+#| fig-cap: Residual plots for explanatory variables vs CPUE in the lognormal model for positive encounters. Top left is year, top right is bait type, bottom left is begin set time, and bottom right is hooks per float.
+#| fig-subcap:
+#|  - ""
+#|  - ""
+#|  - ""
+#|  - ""
+#| layout-ncol: 2
+
+
+   PosResid_Year
+    PosResid_Bait
+    PosResid_Begin
+    PosResid_HPF
+
+```
