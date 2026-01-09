@@ -1,0 +1,113 @@
+---
+title: ""
+format: 
+ revealjs:
+  theme: [default, customizations/presentation-custom.scss]
+  logo: static/noaa-fisheries-logo.png
+  css: customizations/logo.css
+  slide-number: true
+  revealjs-plugins:
+  mermaid-format: svg
+  cap-location: top
+  smaller: true
+embed-resources: true
+execute: 
+  cache: true
+---
+# {.center}
+::: {.titlebox style="text-align:center; font-size: 1.25em;"}
+
+[Summary of US Catch and Size of Pacific Blue Marlin]{.blue-title}
+
+[Michelle Sculley, Ph.D.]{.blue style="font-size:0.5em;"}
+<br>
+[michelle.sculley@noaa.gov]{.blue style="font-size:0.5em;"}
+:::
+
+
+## Pacific Tuna Annual Catch
+```{r}
+
+#| echo: FALSE
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CatchWP_Figures.r")
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/BUM_Length_Figures.R")
+# print("Yes")
+```
+
+
+
+## Pacific Tuna Annual Catch
+```{r}
+library(gt)
+names(Tuna_Annual)[1]<-"Year"
+Tuna_Annual %>% gt() %>%
+  fmt_number(columns = where(is.numeric),
+  decimals = 0, 
+  use_seps=TRUE) %>%
+  tab_style(
+    style = cell_text(size = px(20)),  
+    locations = cells_body()  # Apply to all body cells
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(20), weight = "bold"),
+    locations = cells_column_labels()  # Apply to header cells
+  )
+```
+
+
+
+<<!--- This slide put two figures side by side--->
+## Pacific Longline Catch
+:::{.content-visible when-format="revealjs"}
+<br>
+<br>
+:::
+
+
+```{r}
+#| layout-ncol: 2
+#| fig-width: 6
+#| fig-height: 4
+
+LLTuna_Figure
+
+LLBILL_Figure
+```
+
+
+
+<!---This slide puts a figure and table next to each other--->
+## Skipjack Pole and Line Catch
+:::{layout="[80,20]"}
+```{r}
+SKJPL_Figure
+```
+
+
+``` {r}
+
+names(SKJPL_Catch)[1]<-"Year"
+SKJPL_Catch %>% gt() %>%
+  fmt_number(columns = where(is.numeric),
+  decimals = 0, 
+  use_seps=TRUE) %>%
+  tab_style(
+    style = cell_text(size = px(20)),  
+    locations = cells_body()  # Apply to all body cells
+  ) %>%
+  tab_style(
+    style = cell_text(size = px(20), weight = "bold"),
+    locations = cells_column_labels()  # Apply to header cells
+  )
+
+```
+:::
+
+
+## Stock Status of Pacific HMS
+```{r}
+
+Kobe1
+
+```
+This is how to add text to your sildes

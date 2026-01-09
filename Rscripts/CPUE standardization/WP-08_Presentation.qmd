@@ -1,0 +1,275 @@
+---
+title: ""
+format: 
+ revealjs:
+  theme: [default, customizations/presentation-custom.scss]
+  logo: static/noaa-fisheries-logo.png
+  css: customizations/logo.css
+  slide-number: true
+  revealjs-plugins:
+  mermaid-format: svg
+  cap-location: top
+  smaller: true
+embed-resources: true
+execute:
+    cache: true
+---
+# {.center}
+::: {.titlebox style="text-align:center; font-size: 1.25em;"}
+
+[Standardization of Pacific Blue Marlin Catch Per Unit Effort in the Hawaii Longline Fishery from 1995-2024]{.blue-title}
+
+[Michelle Sculley, Ph.D.]{.blue style="font-size:0.5em;"}
+<br>
+[michelle.sculley@noaa.gov]{.blue style="font-size:0.5em;"}
+:::
+
+<!---This is how to add comments to a quarto file--->
+
+## Pacific blue marlin in the - 
+
+- Indo-Pacific blue marlin are caught by several fleets in the US: 
+    - Hawaii longline (2 sectors targeting swordfish and tuna, respectively)
+    - American Samoa longline
+    - Handline
+    - Troll
+- Both HI LL and AS LL have observer program with varying amounts of coverage.
+- BUM is a non-targeted but economically important species in the LL fisheries
+- Overall catch appears to have increased in the last 10 years
+
+
+
+
+
+## Data
+:::{.r-fit-text}
+- Data from 1995 - 2024 from the Pacific Islands Longline Logbook Program
+- Deep Set :
+    - Targets tuna
+    - ≥ 10 hooks per float 1994-2003
+    - ≥15 hooks per float after 2004
+    - 3-10% observer coverage prior to 2004, 20% 2004 - 2020. 20-7% since 2020
+    - accounts for 90% of the catch
+- Shallow Set:
+    - Targets Swordfish
+    - <10 hooks per float 1994-2000
+    - <15 hooks per float after 2004
+    - Fishery closed from 2001-2004
+    - 100% observer coverage after 2004
+:::
+
+
+## Blue Marlin Nominal CPUE
+```{r}
+source("BUM_dataexploration.r")
+
+source("Plotting Pacific Map.R")
+
+# set up the map data
+BUMCPUE_Map <- aggregate(BUMCPUE$CPUE, by = list(BUMCPUE$Lat5, BUMCPUE$Lon5), mean)
+names(BUMCPUE_Map) <- c("Lat", "Lon", "CPUE")
+BUMCPUE_Map <- subset(BUMCPUE_Map, CPUE > 0)
+
+grid_sf <- st_as_sf(
+    BUMCPUE_Map,
+    coords = c("Lon", "Lat"), # Specify which columns contain longitude and latitude
+    crs = 4326 # Set the initial Coordinate Reference System (WGS84)
+)
+
+# Transform the 'sf' object to the target CRS (the one used for the map)
+grid_sf_transformed <- grid_sf %>%
+    st_transform(crs = target_crs)
+
+Pacific_BaseMap +
+    geom_sf(
+        data = grid_sf_transformed,
+        aes(color = CPUE),
+        alpha = 0.7, size = 6
+    ) +
+    scale_color_viridis(discrete = FALSE) +
+    guides(size = "none")
+
+
+```
+
+
+
+
+## Model Structure
+
+- Delta-lognormal GLMM for both fleets combined
+    - lognormal distribution for positive catches
+    - binomial distribution with logit-link function for encounter probability
+- Forward step-wise model selection on 13 potential explaintory variables
+- Inclusion criteria were based upon an increase of percent deviance explained at least 0.10% and a Chi-squared likelihood ratio test
+
+
+
+## Model Structure
+:::: {.columns}
+
+::: {.column width = "50%"}
+- Operational variables:
+    - Year
+    - Month
+    - Quarter
+    - Hooks per float
+    - bait type
+    - Set time (Continuous and factor)
+    - Set type
+    - Vessel (random effect)
+:::
+
+:::{.column width = "50%"}
+- Spatial and environmental
+    - Latitude
+    - Longitude
+    - SST
+    - PDO
+    - SOI
+    - ONI
+:::
+
+::::
+
+## 
+```{r}
+#| layout-ncol: 2
+
+SSTPlot
+
+SOIPlot
+
+PDOPlot
+
+ONIPlot
+```
+
+##
+```{r}
+#| layout-ncol: 2
+
+LatPlot
+
+LonPlot
+```
+
+##
+```{r}
+#| layout-ncol: 2
+
+
+BeginSetTimePlot
+
+BeginPlot
+
+HPFPlot
+
+BaitPlot
+```
+
+## Final Models 
+$$Probability of Encounter \sim Latitude + Year + Month + Longitude + Bait + HPF + Begin$$ 
+9.7% Deviance Explained
+
+$$log(CPUE) \sim Bait + Begin + Year + HPF + (1|Vessel)$$
+10.2% Deviance Explained
+
+
+## 
+```{r}
+
+CPUEPlot
+
+```
+
+## Diagnostics - Encounter Probability
+```{r}
+#| layout-ncol: 2
+
+hist(residuals(BUM_PropPos, type = "pearson"), main="", xlab = "Pearson residuals")
+qqnorm(residuals(BUM_PropPos), main="")
+qqline(residuals(BUM_PropPos))
+```
+
+## Diagnostics - Positive Catches
+
+```{r}
+#| layout-ncol: 2
+
+hist(residuals(BUM_Pos, type = "pearson"), main = "", xlab = "Pearson residuals")
+qqnorm(residuals(BUM_Pos), main = "")
+qqline(residuals(BUM_Pos))
+```
+
+## Partial Dependency Plots
+```{r}
+#| layout-ncol: 2
+
+
+    pdp_prop_year
+    pdp_prop_mon
+    pdp_prop_lon
+    pdp_prop_lat
+
+```
+Encounter Probability
+
+## Partial Dependency Plots
+```{r}
+#| layout-ncol: 2
+
+    pdp_prop_hpf
+    pdp_prop_begin
+    pdp_prop_bait
+
+
+```
+Encounter Probability
+
+## Partial Dependency Plots
+```{r}
+#| layout-ncol: 2
+
+    pdp_pos_year
+    pdp_pos_bait
+    pdp_pos_begin
+    pdp_pos_hpf
+
+```
+Positivity Catches
+
+## Residual plots - Encounter Probability
+```{r}
+#| layout-ncol: 2
+
+    PPResid_Year
+    PPResid_Month
+PPResid_Lat
+PPResid_Lon
+
+```
+
+## Residual plots - Encounter Probability
+
+```{r}
+#| layout-ncol: 2
+
+    PPResid_HPF
+    PPResid_Begin
+    PPResid_Bait
+
+```
+
+## Residual plots - Positive catches
+
+```{r}
+#| layout-ncol: 2
+
+
+   PosResid_Year
+    PosResid_Bait
+    PosResid_Begin
+    PosResid_HPF
+
+```
