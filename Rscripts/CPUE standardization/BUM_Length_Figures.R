@@ -1,6 +1,6 @@
 library(ggplot2)
 library(mgcv)
-library(maps)
+
 library(reshape2)
 library(lubridate)
 

@@ -1,0 +1,231 @@
+---
+title: ""
+format: 
+ revealjs:
+  theme: [default, customizations/presentation-custom.scss]
+  logo: static/noaa-fisheries-logo.png
+  css: customizations/logo.css
+  slide-number: true
+  revealjs-plugins:
+  mermaid-format: svg
+  cap-location: top
+  smaller: true
+embed-resources: true
+execute: 
+  cache: true
+  fig-format: png
+  fig-dpi: 300
+  echo: false
+  warning: false
+  message: false
+---
+# {.center}
+::: {.titlebox style="text-align:center; font-size: 1.25em;"}
+
+[Summary of US Catch and Size of Pacific Blue Marlin]{.blue-title}
+
+[Michelle Sculley, Ph.D.]{.blue style="font-size:0.5em;"}
+<br>
+[michelle.sculley@noaa.gov]{.blue style="font-size:0.5em;"}
+:::
+
+
+```{r}
+
+#| echo: FALSE
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CPUE standardization/CatchWP_Figures.r")
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CPUE standardization/BUM_Length_Figures.R")
+# print("Yes")
+```
+
+
+
+## Pacific Blue Marlin Annual Longline Catch
+```{r}
+
+AnnualLLCatch
+
+```
+
+
+## Pacific Blue Marlin Other Catch
+```{r}
+ggplot() +
+geom_col(aes(x=YEAR, y=C_BLUE_MARLIN), data = subset(AnnualCatch, Source=="US Other Gears" & YEAR>2000)) +
+    theme_bw() +
+    scale_x_continuous(limits=c(2000, 2025), breaks=seq(2000,2025,5)) +
+    scale_y_continuous(name="Catch (mt)")
+
+```
+
+
+## Blue Marlin Longline Catch
+```{r}
+library(ggplot2)
+ggplot() +
+    # World map polygons
+    geom_polygon(
+        data = world_df,
+        aes(x = long, y = lat, group = group),
+        fill = "grey80", color = "gray50"
+    ) +
+
+    # Plotting the effort data as points with binned sizes
+    geom_point(
+        data = HICatch_5yr,
+        aes(x = Lon5, y = Lat5, size = Catch/1000),
+        color = "red", alpha = 0.7
+    ) +
+
+    # Formatting X and Y axis labels with degrees
+    scale_x_continuous(labels = function(x) paste0(abs(x), "°W")) +
+    scale_y_continuous(labels = function(y) paste0(y, "°N")) +
+
+    # Coordinate adjustments for map area
+    coord_fixed(
+        ratio = 1.3,
+        xlim = c(-180, -100), # Adjust longitude range for Hawaii
+        ylim = c(0, 40) # Adjust latitude range for Hawaii
+    ) +
+
+    # Customizing the legend
+    guides(size = guide_legend(
+        title = "Thousands of Fish Caught",
+        override.aes = list(color = "red") # Ensure legend symbols are red
+    )) +
+
+    # Adding plot title and theme
+    theme_minimal() +
+
+    # Customizing the overall plot theme
+    theme(
+        legend.position = "bottom",
+        legend.background = element_rect(fill = alpha("white", 0.7), color = "black", linewidth = 0.5),
+        legend.title = element_text(size = 10, face = "bold"),
+        legend.text = element_text(size = 9),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.margin = margin(20, 20, 20, 20),
+        panel.grid.major = element_line(color = "gray70"),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA) # Set white background
+    ) + 
+    facet_wrap(~YrGroup, ncol=3, labeller = labeller(YrGroup=YearLabels)) 
+
+```
+
+
+
+## Blue marlin Longline Catch by Quarter
+```{r}
+
+CatchMapQTR
+
+```
+
+
+
+## HI LL Annual Mean Length 
+```{r}
+
+q <- boxplot(Length ~ Year, data = subset(BUM_Length, Fleet=="LL"),xlab = "Year", ylab = "Eye-Fork Length (cm)", ylim = c(0, 350))
+text(x = 1:31, y = 10, labels = q$n, cex = 0.75)
+
+```
+
+
+## American Samoa LL Annual Mean Length
+```{r}
+
+z <- boxplot(Length ~ Year, data = subset(BUM_Length, Fleet=="AS"),xlab = "Year", ylab = "Eye-Fork Length (cm)", ylim = c(0, 350))
+text(x = 1:19, y = 10, labels = z$n, cex = 0.75)
+
+```
+
+## Histogram of HI LL lengths overall and by quarter
+
+```{r}
+#| layout-ncol: 2
+#| echo: false
+#| warning: false
+#| message: false
+
+ggplot() +
+    geom_histogram(aes(x = Length), data = subset(BUM_Length, Fleet=="LL"), bins = 50, fill = "grey90", color = "black") +
+    theme_bw()
+
+ggplot() +
+    geom_histogram(aes(x = Length), data = subset(BUM_Length, Fleet=="LL"), bins = 50, color = "black", fill = "grey90") +
+    theme(
+        panel.background = element_blank(), panel.grid.major = element_line(colour = "grey90"),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        strip.text = element_text(size = 16)
+    ) +
+    geom_vline(aes(xintercept = 177.76), data = data.frame(1), color = "red", linetype = "dashed") +
+    facet_wrap(~Quarter) 
+
+
+```
+
+## Mean LL length by area
+```{r}
+source("Plotting Pacific Map.R")
+
+# set up the map data
+
+grid_sf <- st_as_sf(
+    SLen5,
+    coords = c("Lon", "Lat"), # Specify which columns contain longitude and latitude
+    crs = 4326 # Set the initial Coordinate Reference System (WGS84)
+)
+
+# Transform the 'sf' object to the target CRS (the one used for the map)
+grid_sf_transformed <- grid_sf %>%
+    st_transform(crs = target_crs)
+
+Pacific_BaseMap +
+    geom_sf(
+        data = grid_sf_transformed,
+        aes(color = Length),
+        alpha = 0.7, size=6
+    ) +
+    scale_color_viridis(discrete = FALSE) +
+    guides(size = "none") +
+    theme(legend.position = "bottom")
+
+```
+
+## Mean LL length by quarter
+
+```{r}
+
+grid_sf <- st_as_sf(
+    SLenQ5,
+    coords = c("Lon", "Lat"), # Specify which columns contain longitude and latitude
+    crs = 4326 # Set the initial Coordinate Reference System (WGS84)
+)
+
+# Transform the 'sf' object to the target CRS (the one used for the map)
+grid_sf_transformed <- grid_sf %>%
+    st_transform(crs = target_crs)
+
+Pacific_BaseMap +
+    geom_sf(
+        data = grid_sf_transformed,
+        aes(color = Length),
+        alpha = 0.7, size=3
+    ) +
+    scale_color_viridis(discrete = FALSE) +
+    guides(size = "none") +
+    facet_wrap(~Quarter)+
+    theme(legend.position = "bottom")
+
+
+```

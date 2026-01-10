@@ -50,8 +50,8 @@ Email: michelle.sculley@noaa.gov
 
 ``` {r}
 #| echo: FALSE
-source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CatchWP_Figures.r")
-source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/BUM_Length_Figures.R")
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CPUE standardization/CatchWP_Figures.r")
+source("c:/Users/Michelle.Sculley/Documents/2025_PacificBUM/Rscripts/CPUE standardization/BUM_Length_Figures.R")
 # print("Yes")
 ```
 
@@ -254,7 +254,7 @@ text(x = 1:19, y = 10, labels = z$n, cex = 0.75)
 #| fig-cap: Histogram of all blue marlin lengths available in the Hawaii-based longline observer dataset
 
 ggplot() +
-    geom_histogram(aes(x = Length), data = BUM_Length, bins = 50, fill = "grey90", color = "black") +
+    geom_histogram(aes(x = Length), data = subset(BUM_Length, Fleet=="LL"), bins = 50, fill = "grey90", color = "black") +
     theme_bw() #+
 geom_vline(aes(xintercept = 179.76), color = "red", linetype = "dashed")
 
@@ -267,7 +267,7 @@ geom_vline(aes(xintercept = 179.76), color = "red", linetype = "dashed")
 #| fig-cap: Histograms of lengths of blue marlin available in the Hawaii-based longline observer dataset by quarter (Quarter 1 top left, quarter 2 top right, quarter 3 bottom left, quarter 4 bottom right). Red dashed line indicates length at 50% maturity for females (177cm).
 
 ggplot() +
-    geom_histogram(aes(x = Length), data = BUM_Length, bins = 50, color = "black", fill = "grey90") +
+    geom_histogram(aes(x = Length), data = subset(BUM_Length, Fleet=="LL"), bins = 50, color = "black", fill = "grey90") +
     theme(
         panel.background = element_blank(), panel.grid.major = element_line(colour = "grey90"),
         panel.grid.minor = element_blank(),

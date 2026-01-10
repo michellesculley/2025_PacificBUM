@@ -1,6 +1,5 @@
 library(ggplot2)
 library(mgcv)
-library(maps)
 library(reshape2)
 library(plyr)
 library(gridExtra)
@@ -149,7 +148,11 @@ AnnualLLCatch<-ggplot() +
     scale_x_continuous(limits=c(1992, 2025), breaks=seq(1995,2025,5)) +
     scale_y_continuous(name="Thousands of Fish Caught")
 
-
+AnnualOtherCatch<-ggplot() +
+geom_col(aes(x=YEAR, y=C_BLUE_MARLIN), data = subset(AnnualCatch, Source=="US Other Gears", YEAR>2000)) +
+    theme_bw() +
+    scale_x_continuous(limits=c(2000, 2025), breaks=seq(2000,2025,5)) +
+    scale_y_continuous(name="Catch (mt)")
 
 
 

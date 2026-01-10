@@ -9,7 +9,6 @@ logbook <- read.csv("C:/Users/Michelle.Sculley/Documents/2025_PacificBUM/HI CPUE
 
 library(ggplot2)
 library(mgcv)
-library(maps)
 library(reshape2)
 library(plyr)
 library(gridExtra)
