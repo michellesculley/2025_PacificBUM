@@ -57,6 +57,15 @@ BUM_Length$Lon5<-(ceiling(BUM_Length$Lon /5)*5)-2.5
 
 BUM_HIMean<-mean(subset(BUM_Length, Fleet=="LL")$Length)
 BUM_ASMean <- mean(subset(BUM_Length, Fleet == "AS")$Length)
+AnnualMeanL<-aggregate(BUM_Length$Length, by=list(BUM_Length$Year, BUM_Length$Fleet),mean)
+names(AnnualMeanL)<-c("Year","Fleet","Length")
+AnnualMeanLine<-ggplot() +
+geom_point(aes(x=Year, y=Length, color=Fleet), data=AnnualMeanL ) +
+geom_line(aes(x=Year, y=Length, color=Fleet), data=AnnualMeanL ) +
+geom_text(aes(x=Year, y=Length, label=round(Length)), data=AnnualMeanL ) +
+theme_bw()+
+labs(y="Mean Length (cm EFL)") +
+scale_y_continuous(limits=c(0, 200))
 # library(plyr)
 # BUMUnique<-unique(BUM_Length[,c("Year","Lat1","Lon1","Vessel")])
 # UniqueCount<-plyr::count(BUMUnique,c("Year","Lat1","Lon1"))
@@ -101,7 +110,7 @@ names(SLen5)<-c("Lat","Lon","Length")
 SLenQ5<-aggregate(BUM_Length$Length,by=list(BUM_Length$Quarter,BUM_Length$Lat5,BUM_Length$Lon5),mean)
 names(SLenQ5)<-c("Quarter","Lat","Lon","Length")
 
-# aggregate(BUMLMappingQ5$Length,by=list(BUMLMappingQ5$Quarter),mean)
+ aggregate(BUMLMappingQ5$Length,by=list(BUMLMappingQ5$Quarter),mean)
 # Q length (cm)
 # 1 159.18
 # 2 168.98

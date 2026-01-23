@@ -12,7 +12,7 @@ format:
   smaller: true
 embed-resources: true
 execute: 
-  cache: true
+  cache: false
   fig-format: png
   fig-dpi: 300
   echo: false
@@ -128,12 +128,33 @@ CatchMapQTR
 ```
 
 
+## Blue marlin HI LL Catch by Set
+```{r}
+
+CatchMapSet
+
+
+```
+
+
+## Blue marlin HI LL effort by Set
+```{r}
+EffortMapSet
+
+```
 
 ## HI LL Annual Mean Length 
 ```{r}
 
 q <- boxplot(Length ~ Year, data = subset(BUM_Length, Fleet=="LL"),xlab = "Year", ylab = "Eye-Fork Length (cm)", ylim = c(0, 350))
 text(x = 1:31, y = 10, labels = q$n, cex = 0.75)
+
+```
+
+## Annual Mean length by fleet
+```{r}
+
+AnnualMeanLine
 
 ```
 
@@ -173,6 +194,9 @@ ggplot() +
 
 
 ```
+
+
+
 
 ## Mean LL length by area
 ```{r}

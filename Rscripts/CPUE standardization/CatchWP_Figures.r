@@ -91,6 +91,20 @@ BUMCPUE$Target <- as.factor(BUMCPUE$Target)
  BUMMapping5Q <- subset(BUMCPUE_MapQ, Include5 == 1 & Catch > 0)
 
 
+ BUMUnique5 <- unique(BUMCPUE[, c( "SetType", "Lat5", "Lon5", "Vessel")])
+ UniqueCount5 <- plyr::count(BUMUnique5, vars = c( "SetType", "Lat5", "Lon5"))
+ BUMCPUE_MapSet <- merge(BUMCPUE, UniqueCount5, by = c("SetType", "Lat5", "Lon5"))
+ BUMCPUE_MapSet$Include5 <- ifelse(BUMCPUE_MapSet$freq < 3, 0, 1)
+ BUMMapping5Set <- subset(BUMCPUE_MapSet, Include5 == 1)
+
+HI_CatchMapSet <- aggregate(BUMMapping5Set$Catch,by=list(BUMMapping5Set$SetType, BUMMapping5Set$Lon5, BUMMapping5Set$Lat5), sum)
+names(HI_CatchMapSet)<-c("SetType","Lon5","Lat5","Catch")
+HI_CatchMapSet<-subset(HI_CatchMapSet, Catch>0)
+
+HI_EffortMapSet <- aggregate(BUMMapping5Set$Hooks,by=list(BUMMapping5Set$SetType, BUMMapping5Set$Lon5, BUMMapping5Set$Lat5), sum)
+names(HI_EffortMapSet)<-c("SetType","Lon5","Lat5","Hooks")
+HI_EffortMapSet<-subset(HI_EffortMapSet, Hooks>0)
+
 
 ## BUM
 # HI Longline quarterly catch in numbers
@@ -311,6 +325,126 @@ CatchMapQTR <- ggplot() +
     ) +
     facet_wrap(~Quarter)
 
+CatchMapSet <- ggplot() +
+    # World map polygons
+    geom_polygon(
+        data = world_df,
+        aes(x = long, y = lat, group = group),
+        fill = "grey80", color = "gray50"
+    ) +
+
+    # Plotting the effort data as points with binned sizes
+    geom_point(
+        data = HI_CatchMapSet,
+        aes(x = Lon5, y = Lat5, size = Catch/1000),
+        color = "red", alpha = 0.7
+    ) +
+
+    # Using discrete size scale for binned data
+    #   scale_size_manual(
+    #       values = seq(2, 6, length.out = n_bins), # Size range from 2 to 6
+    #       labels = bin_labels,
+    #       name = "Effort Range"
+    #   ) +
+
+    # Formatting X and Y axis labels with degrees
+    scale_x_continuous(labels = function(x) paste0(abs(x), "°W")) +
+    scale_y_continuous(labels = function(y) paste0(y, "°N")) +
+
+    # Coordinate adjustments for map area
+    coord_fixed(
+        ratio = 1.3,
+        xlim = c(-180, -100), # Adjust longitude range for Hawaii
+        ylim = c(0, 40) # Adjust latitude range for Hawaii
+    ) +
+
+    # Customizing the legend
+    guides(size = guide_legend(
+        title = "Thousands of Fish Caught",
+        override.aes = list(color = "red") # Ensure legend symbols are red
+    )) +
+ 
+    # Adding plot title and theme
+    theme_minimal() +
+
+    # Customizing the overall plot theme
+    theme(
+         legend.position = "bottom",
+        legend.background = element_rect(fill = alpha("white", 0.7), color = "black", linewidth = 0.5),
+        legend.title = element_text(size = 10, face = "bold"),
+        legend.text = element_text(size = 9),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.margin = margin(20, 20, 20, 20),
+        panel.grid.major = element_line(color = "gray70"),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA) # Set white background
+    ) +
+    facet_wrap(~SetType)
 
 
+EffortMapSet <- ggplot() +
+    # World map polygons
+    geom_polygon(
+        data = world_df,
+        aes(x = long, y = lat, group = group),
+        fill = "grey80", color = "gray50"
+    ) +
+
+    # Plotting the effort data as points with binned sizes
+    geom_point(
+        data = HI_EffortMapSet,
+        aes(x = Lon5, y = Lat5, size = Hooks/1000),
+        color = "red", alpha = 0.7
+    ) +
+
+    # Using discrete size scale for binned data
+    #   scale_size_manual(
+    #       values = seq(2, 6, length.out = n_bins), # Size range from 2 to 6
+    #       labels = bin_labels,
+    #       name = "Effort Range"
+    #   ) +
+
+    # Formatting X and Y axis labels with degrees
+    scale_x_continuous(labels = function(x) paste0(abs(x), "°W")) +
+    scale_y_continuous(labels = function(y) paste0(y, "°N")) +
+
+    # Coordinate adjustments for map area
+    coord_fixed(
+        ratio = 1.3,
+        xlim = c(-180, -100), # Adjust longitude range for Hawaii
+        ylim = c(0, 40) # Adjust latitude range for Hawaii
+    ) +
+
+    # Customizing the legend
+    guides(size = guide_legend(
+        title = "Thousands of Hooks Set",
+        override.aes = list(color = "red") # Ensure legend symbols are red
+    )) +
+
+    # Adding plot title and theme
+    theme_minimal() +
+
+    # Customizing the overall plot theme
+    theme(
+         legend.position = "bottom",
+        legend.background = element_rect(fill = alpha("white", 0.7), color = "black", linewidth = 0.5),
+        legend.title = element_text(size = 10, face = "bold"),
+        legend.text = element_text(size = 9),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.margin = margin(20, 20, 20, 20),
+        panel.grid.major = element_line(color = "gray70"),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA) # Set white background
+    ) +
+    facet_wrap(~SetType)
 

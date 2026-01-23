@@ -1,0 +1,67 @@
+---
+title: ""
+format: 
+ revealjs:
+  theme: [default, customizations/presentation-custom.scss]
+  logo: static/noaa-fisheries-logo.png
+  css: customizations/logo.css
+  slide-number: true
+  revealjs-plugins:
+  mermaid-format: svg
+  cap-location: top
+  smaller: true
+embed-resources: true
+execute:
+    cache: true
+---
+
+## Positive only CPUE
+```{r}
+source("BUM_dataexploration.r")
+
+PositiveOnlyCPUEplot
+
+```
+
+## Positive CPUE vs Year by Set
+```{r}
+#| layout-ncol: 2
+PosCPUEvsSet
+PosCPUEvsDeepSet
+
+```
+
+## Positive CPUE vs HPF
+```{r}
+
+CPUEvsHPF
+
+```
+
+
+## Deep Set only
+```{r}
+
+DeepCPUEPlot
+
+
+```
+Deep = Green, Standardized = black, positives only = blue, nominal = red 
+
+
+## Deep set diagnostics - positive catches
+```{r}
+#| layout-ncol: 2
+plot(Deep_Pos)
+hist(residuals(Deep_Pos, type = "pearson"), main="", xlab = "Pearson residuals")
+qqnorm(residuals(Deep_Pos), main="")
+qqline(residuals(Deep_Pos))
+```
+
+## Deep set diagnostics - encounter rates
+```{r}
+#| layout-ncol: 1
+hist(residuals(Deep_PropPos, type = "pearson"), main="", xlab = "Pearson residuals")
+qqnorm(residuals(Deep_PropPos), main="")
+qqline(residuals(Deep_PropPos))
+```

@@ -119,14 +119,51 @@ BUMMapping5Q <- subset(BUMCPUE_MapQ, Include5 == 1)
 
 #  BUM_PropPos<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
 
-#  BUM_Pos <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) + (1 | Vessel), data = BUMPos, REML = FALSE)
+#  BUM_PropPosLat<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin) + as.factor(Year)*Lat, data = BUMCPUE, family = binomial(link = "logit"))
+# BUM_PropPosLon<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin) + as.factor(Year)*Lon, data = BUMCPUE, family = binomial(link = "logit"))
+# BUM_PropPosBait<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin) + as.factor(Year)*as.factor(Bait), data = BUMCPUE, family = binomial(link = "logit"))
+# BUM_PropPosBegin<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin) + as.factor(Year)*as.factor(Begin), data = BUMCPUE, family = binomial(link = "logit"))
+# BUM_PropPosHPF<-glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin) + as.factor(Year)*as.factor(HPF), data = BUMCPUE, family = binomial(link = "logit"))
+
+# #  BUM_Pos <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) + (1 | Vessel), data = BUMPos, REML = FALSE)
+# BUM_PosBait <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) + as.factor(Year)*as.factor(Bait)+ (1 | Vessel), data = BUMPos, REML = FALSE)
+# BUM_PosBegin <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) +as.factor(Year)*as.factor(Begin)+ (1 | Vessel), data = BUMPos, REML = FALSE)
+# BUM_PosHPF <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) +as.factor(Year)*as.factor(HPF)+ (1 | Vessel), data = BUMPos, REML = FALSE)
+
+
 
 # ## deepset only doesn't improve residuals
-# # DeepOnly<-subset(BUMCPUE,SetType=="D")
-# # DeepPos<-subset(DeepOnly, PropPos==1)
-# # Deep_PropPos <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin), data = DeepOnly, family = binomial(link = "logit"))
+DeepOnly<-subset(BUMCPUE,SetType=="D")
+DeepPos<-subset(DeepOnly, PropPos==1)
+load("C:/users/michelle.sculley/Documents/2025_PacificBUM/DeepCPUEStand.Rdata")
+# Deep_PropPos <- glm(PropPos ~ Lat + as.factor(Year) + as.factor(Month) + Lon + as.factor(Bait) + as.factor(HPF) + as.factor(Begin), data = DeepOnly, family = binomial(link = "logit"))
 
-# # Deep_Pos <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) + (1 | Vessel), data = DeepPos, REML = FALSE)
+# Deep_Pos <- lmer(log(CPUE) ~ as.factor(Bait) + as.factor(Begin) + as.factor(Year) + as.factor(HPF) + (1 | Vessel), data = DeepPos, REML = FALSE)
+
+# emm_options(rg.limit=300000)
+# lsmean.DeepPos <- emmeans(Deep_Pos, ~Year)
+# Final.DeepPos<-regrid(lsmean.DeepPos, transform="response")
+
+# emm_options(rg.limit=4500000)
+# lsmean.Deepprop<-summary(ref_grid(Deep_PropPos))
+# lsmean.Deepprop$TranCPUE<-1/(1+exp(-lsmean.Deepprop$prediction))
+# predicted.Deepproppos <- aggregate(lsmean.Deepprop$TranCPUE, by = list(lsmean.Deepprop$Year), mean)
+# variance.Deepproppos <- aggregate(lsmean.Deepprop$TranCPUE, by = list(lsmean.Deepprop$Year), var)
+
+# StandDeep <- data.frame("Year" = predicted.Deepproppos$Group.1, "CPUE" = Final.DeepPos@bhat * predicted.Deepproppos$x)
+
+# goodman.se <- function(p, var_p, c, var_c) {
+#     (var_p * c^2 + var_c * p^2 - var_p * var_c)^.5
+# }
+# StandDeep$SE <- goodman.se(Final.DeepPos@bhat, (sqrt(diag(Final.DeepPos@V))^2), predicted.Deepproppos$x, variance.Deepproppos$x)
+
+# StandDeep$UL<-StandDeep$CPUE+1.96*StandDeep$SE
+# StandDeep$LL <- StandDeep$CPUE - 1.96 * StandDeep$SE
+
+# save(Deep_Pos, Deep_PropPos, StandDeep, file="DeepCPUEStand.Rdata")
+
+
+
 
 
 # ## calculate standardized CPUE value: 
@@ -616,3 +653,52 @@ PPResid_Begin<-ggplot(boxplot_data, aes(x = Begin, y = Pearson_Residuals)) +
     ) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+## Plot of standardized CPUE, Positive only CPUE, and nominal CPUE
+PosOnlyCPUE<-data.frame("CPUE" = Final.Pos@bhat, "Year"=Final.Pos@levels, "StDev"=sqrt(diag(Final.Pos@V)))
+PosOnlyCPUE$UCI<-PosOnlyCPUE$CPUE+1.96*PosOnlyCPUE$StDev
+PosOnlyCPUE$LCI<-PosOnlyCPUE$CPUE-1.96*PosOnlyCPUE$StDev
+
+
+PositiveOnlyCPUEplot<-ggplot()+
+ geom_point(aes(x = Year, y = MeanCPUE), data = RawCPUE, color = "red") +
+     geom_line(aes(x = Year, y = MeanCPUE), data = RawCPUE, color = "red") +
+geom_point(aes(x=Year, y=CPUE), data=PosOnlyCPUE, color="blue") +
+geom_line(aes(x=Year, y=CPUE), data=PosOnlyCPUE, color="blue") +
+geom_ribbon(aes(x = Year, ymin = ifelse(LL<0,0,LL), ymax=UL), data = StandCPUE, color = "black", alpha=0.05) +
+geom_point(aes(x=Year, y=CPUE), data=StandCPUE, color="black") +
+geom_line(aes(x=Year, y=CPUE), data=StandCPUE, color="black") +
+ geom_ribbon(aes(x = Year, ymax = UCI, ymin = ifelse(LCI<0,0,LCI)), data = PosOnlyCPUE, color = "blue", alpha=0.05) 
+
+
+PosCPUEvsSet<-ggplot()+
+geom_point(aes(x=Year,y=CPUE, color=SetType), data=BUMPos, position="jitter")
+
+PosCPUEvsDeepSet<-ggplot()+
+geom_point(aes(x=Year,y=CPUE, color=SetType), data=subset(BUMPos, SetType=="D"), position="jitter")
+
+CPUEvsHPF<-ggplot()+
+geom_point(aes(x=HPF,y=CPUE, color=SetType), data=BUMPos, position="jitter")
+
+
+
+PropPosCPUEvsSet<-ggplot()+
+geom_point(aes(x=Year,y=CPUE, color=SetType), data=BUMCPUE, position="jitter")
+
+PosCPUEvsHPF<-ggplot()+
+geom_point(aes(x=Year,y=CPUE, color=HPF), data=BUMPos, position="jitter")
+
+DeepCPUEPlot<-ggplot() +
+    geom_point(aes(x = Year, y = MeanCPUE), data = RawCPUE, color = "red") +
+     geom_line(aes(x = Year, y = MeanCPUE), data = RawCPUE, color = "red") +
+geom_point(aes(x=Year, y=CPUE), data=PosOnlyCPUE, color="blue") +
+geom_line(aes(x=Year, y=CPUE), data=PosOnlyCPUE, color="blue") +
+geom_ribbon(aes(x = Year, ymin = ifelse(LL<0,0,LL), ymax=UL), data = StandCPUE, color = "black", alpha=0.05) +
+geom_point(aes(x=Year, y=CPUE), data=StandCPUE, color="black") +
+geom_line(aes(x=Year, y=CPUE), data=StandCPUE, color="black") +
+ geom_ribbon(aes(x = Year, ymax = UCI, ymin = ifelse(LCI<0,0,LCI)), data = PosOnlyCPUE, color = "blue", alpha=0.05) +
+geom_point(aes(x=Year, y=CPUE), data=StandDeep, color="#00ff62") +
+geom_line(aes(x=Year, y=CPUE), data=StandDeep, color="#00ff62") +
+ geom_ribbon(aes(x = Year, ymax = UL, ymin = ifelse(LL<0,0,LL)), data = StandDeep, color = "#00ff62", alpha=0.05) 
+

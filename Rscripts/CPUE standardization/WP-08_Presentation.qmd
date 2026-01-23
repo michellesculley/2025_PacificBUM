@@ -173,7 +173,7 @@ $$Probability of Encounter \sim Latitude + Year + Month + Longitude + Bait + HPF
 9.7% Deviance Explained
 
 $$log(CPUE) \sim Bait + Begin + Year + HPF + (1|Vessel)$$
-10.2% Deviance Explained
+49% Deviance Explained
 
 
 ## 
