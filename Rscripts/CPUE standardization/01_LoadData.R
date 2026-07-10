@@ -39,7 +39,7 @@ db_host     <- "picdb.nmfs.local"      # Hostname or IP address
 db_port     <- "1521"                        # Default Oracle port
 db_service  <- "pic.pifscproddbsn.pifscprodvcn.oraclevcn.com"     # The database service name
 db_user     <- "msculley"
-db_pass <- "792015is.LK!"
+db_pass <- "********"
 
 # --- Build the Connection String ---
 # The .connection_string argument is where you provide all the details.
